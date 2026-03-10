@@ -120,7 +120,7 @@ export default function ChatSection() {
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
-      <div className="h-20 px-6 pt-8 pb-4 flex items-center justify-between z-20 shrink-0 bg-[#030303] border-b border-white/5">
+      <div className="h-[100px] md:h-20 px-6 pt-12 md:pt-8 pb-4 flex items-center justify-between z-20 shrink-0 bg-[#030303] border-b border-white/5">
         <button className="text-white hover:text-neutral-300 transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </button>

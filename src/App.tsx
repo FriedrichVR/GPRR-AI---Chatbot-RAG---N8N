@@ -7,9 +7,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'xr' | 'gprr' | 'ai'>('ai');
 
   return (
-    <div className="min-h-screen p-6 md:p-12 flex justify-center items-start selection:bg-emerald-500/30 selection:text-emerald-200 bg-black">
+    <div className="min-h-screen md:p-12 flex justify-center items-center selection:bg-emerald-500/30 selection:text-emerald-200 bg-black">
       {/* Mobile Frame */}
-      <div className="w-full max-w-[390px] h-[844px] bg-[#050A08] rounded-[3rem] border border-neutral-800 relative overflow-hidden flex flex-col shadow-2xl shadow-black ring-8 ring-neutral-900/50">
+      <div className="w-full h-[100dvh] md:h-[844px] md:max-w-[390px] bg-[#050A08] md:rounded-[3rem] md:border border-neutral-800 relative overflow-hidden flex flex-col md:shadow-2xl md:shadow-black md:ring-8 ring-neutral-900/50">
         
         {/* Main Content Area */}
         <div className="flex-1 relative z-10 overflow-hidden flex flex-col">
@@ -23,7 +23,7 @@ export default function App() {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="h-20 bg-[#030303] border-t border-white/5 flex justify-between items-center px-6 pb-4 pt-2 z-50">
+        <div className="h-[88px] md:h-20 bg-[#030303] border-t border-white/5 flex justify-between items-center px-6 pb-8 md:pb-4 pt-2 z-50">
           <button 
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center gap-1 transition-colors ${activeTab === 'dashboard' ? 'text-white' : 'text-neutral-500 hover:text-neutral-400'}`}
@@ -63,7 +63,7 @@ export default function App() {
         </div>
         
         {/* Home Indicator */}
-        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full z-50"></div>
+        <div className="hidden md:block absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1/3 h-1 bg-white/20 rounded-full z-50"></div>
       </div>
     </div>
   );
