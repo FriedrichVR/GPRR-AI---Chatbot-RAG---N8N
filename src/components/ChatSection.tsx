@@ -37,10 +37,11 @@ export default function ChatSection() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const sendMessage = async () => {
-    if (!inputValue.trim()) return;
+  const sendMessage = async (textToSend?: string | React.MouseEvent) => {
+    const text = typeof textToSend === 'string' ? textToSend : inputValue;
+    if (!text.trim()) return;
 
-    const userText = inputValue.trim();
+    const userText = text.trim();
     setInputValue('');
     
     // 1. Add user message to local UI
@@ -138,11 +139,11 @@ export default function ChatSection() {
       </div>
 
       {/* Scroll Content - Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-6 space-y-8 no-scrollbar">
+      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-6 no-scrollbar">
         {messages.map((msg, idx) => {
           const isAI = msg.role === 'assistant';
           return (
-            <div key={idx} className={`flex flex-col ${isAI ? 'items-start' : 'items-end'}`}>
+            <div key={idx} className={`flex flex-col ${isAI ? 'items-start mb-8' : 'items-end mb-4'}`}>
               <div className={`flex items-end gap-3 max-w-[85%] ${isAI ? 'flex-row' : 'flex-row-reverse'}`}>
                 
                 {/* AI Avatar */}
@@ -187,7 +188,7 @@ export default function ChatSection() {
         
         {/* Typing Indicator */}
         {isTyping && (
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start mb-8">
             <div className="flex items-end gap-3 max-w-[85%]">
               <div className="w-8 h-8 rounded-full bg-emerald-900/40 flex items-center justify-center shrink-0 mb-1">
                 <Bot className="w-5 h-5 text-emerald-500" />
@@ -204,14 +205,14 @@ export default function ChatSection() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-[#030303] border-t border-white/5 z-20">
+      <div className="p-4 bg-[#030303] border-t border-white/5 z-20 flex flex-col gap-3">
         <div className="relative flex items-center bg-[#111111] border border-white/10 rounded-full p-1.5 focus-within:border-emerald-500/50 transition-colors">
           <input 
             type="text" 
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask your coach..." 
+            placeholder="Escribe tu mensaje..." 
             className="flex-1 bg-transparent text-[15px] text-white placeholder-neutral-500 px-4 py-2 focus:outline-none"
           />
           <button 
@@ -222,6 +223,20 @@ export default function ChatSection() {
             <Send className="w-5 h-5 ml-0.5" />
           </button>
         </div>
+        {/* Quick Questions */}
+        {messages.length <= 1 && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
+            {['What is GPRR Invap XR?', 'What hardware is used?', 'How does the simulation work?'].map((q, i) => (
+              <button
+                key={i}
+                onClick={() => sendMessage(q)}
+                className="px-4 py-2 bg-[#111111] border border-white/10 rounded-full text-sm text-neutral-300 whitespace-nowrap hover:bg-[#1A201E] hover:border-emerald-500/50 transition-colors shrink-0"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
