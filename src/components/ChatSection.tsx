@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, ChevronLeft, Settings } from 'lucide-react';
+import Markdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -100,9 +101,6 @@ export default function ChatSection() {
       if (!aiResponse) {
         aiResponse = "I received your message, but couldn't parse the response format.";
       }
-
-      // Remove asterisks from the response
-      aiResponse = aiResponse.replace(/\*/g, '');
       
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, timestamp: getCurrentTime() }]);
     } catch (error) {
@@ -154,15 +152,19 @@ export default function ChatSection() {
                 )}
 
                 {/* Message Bubble */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 w-full">
                   <div 
-                    className={`p-4 text-[15px] leading-relaxed whitespace-pre-wrap ${
+                    className={`p-4 text-[15px] leading-relaxed ${
                       isAI 
-                        ? 'bg-[#1A201E] text-neutral-200 rounded-2xl rounded-bl-sm border border-white/5' 
-                        : 'bg-[#10B981] text-black rounded-2xl rounded-br-sm font-medium'
+                        ? 'bg-[#1A201E] text-neutral-200 rounded-2xl rounded-bl-sm border border-white/5 prose prose-invert prose-emerald max-w-none prose-p:leading-relaxed prose-pre:bg-[#0A0D0C] prose-pre:border prose-pre:border-white/10 prose-code:text-emerald-400 prose-code:bg-emerald-950/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none' 
+                        : 'bg-[#10B981] text-black rounded-2xl rounded-br-sm font-medium whitespace-pre-wrap'
                     }`}
                   >
-                    {msg.content}
+                    {isAI ? (
+                      <Markdown>{msg.content}</Markdown>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
                   
                   {/* Media Card (if any) */}
@@ -226,7 +228,7 @@ export default function ChatSection() {
         {/* Quick Questions */}
         {messages.length <= 1 && (
           <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-            {['What is GPRR Invap XR?', 'What hardware is used?', 'How does the simulation work?'].map((q, i) => (
+            {['¿Qué es GPRR Invap XR?', '¿Qué hardware se utiliza?', '¿Cómo funciona la simulación?'].map((q, i) => (
               <button
                 key={i}
                 onClick={() => sendMessage(q)}
