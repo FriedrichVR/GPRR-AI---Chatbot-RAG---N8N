@@ -38,7 +38,19 @@ const QUESTION_POOL = [
   '¿Qué medidas de seguridad virtual están implementadas?',
   '¿Se requiere experiencia previa para usar el simulador?',
   '¿Cuáles son los requisitos de hardware para PC?',
-  '¿La experiencia XR soporta modo multijugador?'
+  '¿La experiencia XR soporta modo multijugador?',
+  '¿Qué framework de XR se utiliza para el desarrollo?',
+  '¿Cómo se optimizan los modelos 3D para mantener altos FPS?',
+  '¿Cómo se maneja el tracking de manos en la simulación?',
+  '¿Qué modelo de lenguaje (LLM) procesa las consultas del GPRR?',
+  '¿Cómo se actualiza la base de conocimiento RAG del asistente?',
+  '¿El asistente de IA tiene acceso en tiempo real a la telemetría?',
+  '¿Cómo se mitigan las alucinaciones de la IA en datos críticos?',
+  '¿Qué rol cumple n8n en la arquitectura del proyecto?',
+  '¿Cómo se estructuran los nodos del webhook en n8n?',
+  '¿Qué bases de datos vectoriales se conectan mediante n8n?',
+  '¿Cómo maneja n8n los errores de conexión con la IA?',
+  '¿Cómo se integra el frontend de React con los flujos de n8n?'
 ];
 
 export default function ChatSection() {

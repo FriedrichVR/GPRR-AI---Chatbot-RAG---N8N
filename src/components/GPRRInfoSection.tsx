@@ -71,7 +71,7 @@ export default function GPRRInfoSection() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <div className="text-neutral-400 leading-relaxed bg-[#0A0D0C] p-4 rounded-2xl border border-white/5 shadow-lg text-sm">
+          <div className="text-neutral-400 leading-relaxed bg-[#0A0D0C] p-6 rounded-3xl border border-white/5 shadow-lg text-sm">
             <p>
               El GPRR (General Purpose Research Reactor) es el primer Gemelo Digital Estratégico de INVAP. 
               No es solo un visualizador 3D; es un ecosistema de Realidad Extendida (XR) diseñado para 
@@ -112,15 +112,15 @@ export default function GPRRInfoSection() {
 
       <div>
         <h2 className="text-lg font-bold text-white mb-4">Pilares de la Plataforma</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {pillars.map((pillar, i) => (
-            <div key={i} className="p-5 rounded-2xl bg-[#0A0D0C] border border-white/5 flex flex-col items-center text-center gap-3 hover:border-emerald-500/20 transition-all duration-300 hover:bg-[#0D1110] aspect-square justify-center">
-              <div className="p-3 rounded-xl bg-emerald-950/30 text-emerald-500">
+            <div key={i} className="p-6 rounded-3xl bg-[#0A0D0C] border border-white/5 flex items-center gap-4 hover:border-emerald-500/20 transition-all duration-300 hover:bg-[#0D1110]">
+              <div className="p-4 rounded-2xl bg-emerald-950/30 text-emerald-500 shrink-0">
                 <pillar.icon className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">{pillar.title}</h4>
-                <p className="text-xs text-neutral-400 mt-1.5 leading-relaxed line-clamp-3">{pillar.desc}</p>
+                <h4 className="text-base font-bold text-white">{pillar.title}</h4>
+                <p className="text-sm text-neutral-400 mt-1 leading-relaxed">{pillar.desc}</p>
               </div>
             </div>
           ))}
