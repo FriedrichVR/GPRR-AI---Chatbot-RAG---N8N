@@ -92,13 +92,13 @@ export default function WorkoutCards() {
           {/* Photo 3 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=800&auto=format&fit=crop" 
-              alt="VR Tech" 
+              src="https://images.unsplash.com/photo-1773194328029-b0a6d1fe8b30?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+              alt="Reactor Building GPRR" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
-              <h4 className="text-white font-bold text-sm">Hardware XR</h4>
+              <h4 className="text-white font-bold text-sm">Reactor Building GPRR</h4>
               <p className="text-neutral-400 text-[10px] mt-1">Integración Varjo / Meta Quest 3</p>
             </div>
           </div>
