@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ChevronLeft, Settings, Sparkles, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Send, Bot, ChevronLeft, Settings, Sparkles, ThumbsUp, ThumbsDown, Cpu, Briefcase, Microscope, Check } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -14,6 +14,30 @@ interface Message {
     subtitle: string;
   };
 }
+
+const PERSONAS = [
+  {
+    id: 'expert',
+    name: 'Technical Expert',
+    icon: Cpu,
+    description: 'Respuestas técnicas sobre ingeniería y XR',
+    prompt: 'Actúa como un Experto Técnico en ingeniería nuclear y Realidad Extendida (XR). Proporciona respuestas detalladas, técnicas y precisas, utilizando terminología adecuada.'
+  },
+  {
+    id: 'pm',
+    name: 'Project Manager',
+    icon: Briefcase,
+    description: 'Enfoque en viabilidad, plazos y recursos',
+    prompt: 'Actúa como un Project Manager del proyecto GPRR. Enfócate en la viabilidad, plazos, recursos, escalabilidad y los objetivos estratégicos del proyecto.'
+  },
+  {
+    id: 'researcher',
+    name: 'AI Researcher',
+    icon: Microscope,
+    description: 'Perspectiva académica y modelos de IA',
+    prompt: 'Actúa como un Investigador de IA. Enfócate en la innovación, los modelos de lenguaje, arquitecturas RAG, y el impacto de la IA en la simulación.'
+  }
+];
 
 const QUESTION_POOL = [
   '¿Qué es el ecosistema GPRR?',
@@ -60,6 +84,8 @@ export default function ChatSection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const [questionFeedback, setQuestionFeedback] = useState<Record<string, 'up' | 'down'>>({});
+  const [activePersona, setActivePersona] = useState(PERSONAS[0]);
+  const [showPersonaMenu, setShowPersonaMenu] = useState(false);
 
   const refreshQuestions = (currentMessages: Message[] = messages) => {
     // Get all user questions to avoid suggesting them again
@@ -185,10 +211,12 @@ export default function ChatSection() {
 
     try {
       // 2. Call local proxy API (bypasses CORS and adblockers)
+      const contextualizedText = `[INSTRUCCIÓN DE ROL: ${activePersona.prompt}]\n\nPregunta del usuario: ${userText}`;
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chatInput: userText, sessionId })
+        body: JSON.stringify({ chatInput: contextualizedText, sessionId })
       });
 
       if (!response.ok) {
@@ -285,13 +313,18 @@ export default function ChatSection() {
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
-      <div className="h-16 px-4 flex items-center justify-between z-20 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5 relative">
+      <div className="h-16 px-4 flex items-center justify-between z-30 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5 relative">
         <div className="flex items-center gap-3">
           <button className="text-white hover:text-neutral-300 transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div className="flex flex-col">
-            <h1 className="text-sm font-bold tracking-wide text-white">GPRR AI</h1>
+            <h1 className="text-sm font-bold tracking-wide text-white flex items-center gap-2">
+              GPRR AI
+              <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 text-[10px] uppercase tracking-wider font-semibold border border-emerald-500/20">
+                {activePersona.name}
+              </span>
+            </h1>
             <div className="flex items-center gap-1.5">
               {isLoading ? (
                 <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" />
@@ -304,9 +337,71 @@ export default function ChatSection() {
             </div>
           </div>
         </div>
-        <button className="text-white hover:text-neutral-300 transition-colors p-2">
-          <Settings className="w-5 h-5" />
-        </button>
+        
+        <div className="relative">
+          <button 
+            onClick={() => setShowPersonaMenu(!showPersonaMenu)}
+            className={`p-2 rounded-xl transition-colors ${showPersonaMenu ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+
+          <AnimatePresence>
+            {showPersonaMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowPersonaMenu(false)}
+                />
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 top-full mt-2 w-64 bg-[#0A0D0C] border border-white/10 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden z-50"
+                >
+                  <div className="p-3 border-b border-white/5 bg-white/[0.02]">
+                    <h3 className="text-xs font-bold text-white uppercase tracking-wider">Seleccionar Persona</h3>
+                    <p className="text-[10px] text-neutral-400 mt-0.5">Ajusta el enfoque y tono del asistente</p>
+                  </div>
+                  <div className="p-1.5">
+                    {PERSONAS.map((persona) => (
+                      <button
+                        key={persona.id}
+                        onClick={() => {
+                          setActivePersona(persona);
+                          setShowPersonaMenu(false);
+                        }}
+                        className={`w-full flex items-start gap-3 p-2.5 rounded-xl transition-colors text-left ${
+                          activePersona.id === persona.id 
+                            ? 'bg-emerald-500/10 border border-emerald-500/20' 
+                            : 'hover:bg-white/5 border border-transparent'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg shrink-0 ${activePersona.id === persona.id ? 'bg-emerald-500/20 text-emerald-500' : 'bg-white/5 text-neutral-400'}`}>
+                          <persona.icon className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className={`text-sm font-semibold truncate ${activePersona.id === persona.id ? 'text-emerald-500' : 'text-neutral-200'}`}>
+                              {persona.name}
+                            </span>
+                            {activePersona.id === persona.id && (
+                              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-[10px] text-neutral-500 mt-0.5 leading-snug">
+                            {persona.description}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
         
         {/* Loading Progress Bar */}
         <AnimatePresence>
