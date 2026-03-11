@@ -17,15 +17,17 @@ export default function GPRRInfoSection() {
     setErrorMessage('');
 
     try {
-      // Usamos no-cors por si el webhook de n8n no tiene configurado CORS
-      // y enviamos como x-www-form-urlencoded que es un Content-Type permitido en no-cors
+      // n8n espera multipart/form-data para este webhook
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('message', formData.message);
+
       const response = await fetch('https://n8n.srv1202174.hstgr.cloud/form/d0b9936a-435d-4ab5-9713-04825d6b7807', {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(formData).toString(),
+        // No seteamos Content-Type manualmente, fetch lo hace automáticamente con el boundary correcto al usar FormData
+        body: formDataToSend,
       });
 
       if (response.ok || response.type === 'opaque') {
