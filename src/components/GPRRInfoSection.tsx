@@ -17,17 +17,13 @@ export default function GPRRInfoSection() {
     setErrorMessage('');
 
     try {
-      // n8n espera multipart/form-data para este webhook
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('message', formData.message);
-
-      const response = await fetch('https://n8n.srv1202174.hstgr.cloud/form/d0b9936a-435d-4ab5-9713-04825d6b7807', {
+      // Enviamos como JSON estándar para que sea procesado por un nodo Webhook de n8n
+      const response = await fetch('https://n8n.srv1202174.hstgr.cloud/webhook/d0b9936a-435d-4ab5-9713-04825d6b7807', {
         method: 'POST',
-        mode: 'no-cors',
-        // No seteamos Content-Type manualmente, fetch lo hace automáticamente con el boundary correcto al usar FormData
-        body: formDataToSend,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
 
       if (response.ok || response.type === 'opaque') {
