@@ -1,4 +1,5 @@
-import { User, Code, Cpu, Box, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { User, Code, Cpu, Box, ChevronRight, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 interface Profile {
   name: string;
@@ -6,6 +7,12 @@ interface Profile {
   description: string;
   tags: string[];
   avatar?: string;
+}
+
+interface Task {
+  text: string;
+  priority: 'low' | 'medium' | 'high';
+  dueDate: string;
 }
 
 const team: Profile[] = [
@@ -30,6 +37,19 @@ const team: Profile[] = [
 ];
 
 export default function XRSection() {
+  const [taskText, setTaskText] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [dueDate, setDueDate] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const addTask = () => {
+    if (taskText.trim()) {
+      setTasks([...tasks, { text: taskText, priority, dueDate }]);
+      setTaskText('');
+      setDueDate('');
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
@@ -51,10 +71,10 @@ export default function XRSection() {
         {team.map((member, idx) => (
           <div 
             key={idx} 
-            className="group relative bg-[#0A0D0C] border border-white/5 rounded-3xl p-5 hover:border-emerald-500/30 transition-all duration-300 overflow-hidden"
+            className="group relative bg-[#0A0D0C] border border-white/10 rounded-3xl p-5 hover:border-emerald-500/30 transition-all duration-300 overflow-hidden shadow-[inset_0_0_20px_rgba(16,185,129,0.03)]"
           >
             {/* Background Accent */}
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/5 blur-[40px] rounded-full group-hover:bg-emerald-500/10 transition-all"></div>
+            <div className="absolute -top-16 -right-16 w-40 h-40 bg-emerald-500/5 blur-[80px] rounded-full group-hover:bg-emerald-500/10 transition-all"></div>
             
             <div className="relative z-10">
               <div className="flex items-start justify-between">
@@ -97,45 +117,81 @@ export default function XRSection() {
           </div>
           
           <div className="grid grid-cols-1 gap-4">
-            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
-              <img 
-                src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=800&auto=format&fit=crop" 
-                alt="Immersive Simulation" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
-                <h4 className="text-white font-bold text-sm tracking-tight">Immersive Simulation</h4>
-                <p className="text-neutral-400 text-[10px] mt-1">High-fidelity nuclear environment</p>
+            {[
+              { src: "https://images.unsplash.com/photo-1581092160607-ee22531d30c2?q=80&w=800&auto=format&fit=crop", title: "Immersive Simulation", desc: "High-fidelity nuclear environment" },
+              { src: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=800&auto=format&fit=crop", title: "Interactive Controls", desc: "Precision manipulation mechanics" },
+              { src: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop", title: "Data Visualization", desc: "Real-time physics monitoring" },
+              { src: "https://images.unsplash.com/photo-1569012871812-f32ee6b8a5ff?q=80&w=800&auto=format&fit=crop", title: "Nuclear Core", desc: "Reactor core visualization" },
+              { src: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?q=80&w=800&auto=format&fit=crop", title: "XR Interface", desc: "Advanced HUD systems" },
+              { src: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop", title: "Reactor Control", desc: "Operational dashboard" }
+            ].map((img, i) => (
+              <div key={i} className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
+                <img 
+                  src={img.src} 
+                  alt={img.title} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
+                  <h4 className="text-white font-bold text-sm tracking-tight">{img.title}</h4>
+                  <p className="text-neutral-400 text-[10px] mt-1">{img.desc}</p>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
-              <img 
-                src="https://images.unsplash.com/photo-1592477976562-f55d3623f60c?q=80&w=800&auto=format&fit=crop" 
-                alt="Interactive Controls" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                referrerPolicy="no-referrer"
+        {/* Task Input Section */}
+        <div className="pt-6 px-2">
+          <h3 className="text-white text-base font-medium mb-4 flex items-center gap-2">
+            <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
+            XR Tasks
+          </h3>
+          <div className="flex flex-col gap-2">
+            <input 
+              type="text"
+              value={taskText}
+              onChange={(e) => setTaskText(e.target.value)}
+              placeholder="Add a new task..."
+              className="w-full bg-[#111111] border border-white/10 rounded-full px-4 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500/50"
+            />
+            <div className="flex gap-2">
+              <select 
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as any)}
+                className="bg-[#111111] border border-white/10 rounded-full px-4 py-2 text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <input 
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="bg-[#111111] border border-white/10 rounded-full px-4 py-2 text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/50"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
-                <h4 className="text-white font-bold text-sm tracking-tight">Interactive Controls</h4>
-                <p className="text-neutral-400 text-[10px] mt-1">Precision manipulation mechanics</p>
-              </div>
-            </div>
-
-            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
-              <img 
-                src="https://images.unsplash.com/photo-1551288049-bbbda546697a?q=80&w=800&auto=format&fit=crop" 
-                alt="Data Visualization" 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
-                <h4 className="text-white font-bold text-sm tracking-tight">Data Visualization</h4>
-                <p className="text-neutral-400 text-[10px] mt-1">Real-time physics monitoring</p>
-              </div>
+              <button 
+                onClick={addTask}
+                className="flex-1 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-500 transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
             </div>
           </div>
+          <ul className="mt-4 space-y-2">
+            {tasks.map((t, i) => (
+              <li key={i} className="text-neutral-300 text-sm bg-[#111111] p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                <span>{t.text}</span>
+                <div className="flex items-center gap-2 text-xs text-neutral-500">
+                  <span className={`px-2 py-0.5 rounded-full ${t.priority === 'high' ? 'bg-red-950 text-red-400' : t.priority === 'medium' ? 'bg-yellow-950 text-yellow-400' : 'bg-blue-950 text-blue-400'}`}>
+                    {t.priority}
+                  </span>
+                  {t.dueDate && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {t.dueDate}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Vision Footer */}

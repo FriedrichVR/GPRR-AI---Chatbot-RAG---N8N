@@ -233,18 +233,18 @@ export default function ChatSection() {
                 <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex flex-col gap-2 min-w-[140px]">
                   <div className="flex items-center gap-1.5 h-4">
                     <motion.div 
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
                       className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
                     ></motion.div>
                     <motion.div 
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.2, ease: "easeInOut" }}
                       className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
                     ></motion.div>
                     <motion.div 
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.4, ease: "easeInOut" }}
                       className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
                     ></motion.div>
                   </div>
@@ -289,7 +289,14 @@ export default function ChatSection() {
         {/* Quick Questions */}
         {messages.length <= 1 && (
           <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-            {['¿Qué es GPRR Invap XR?', '¿Qué hardware se utiliza?', '¿Cómo funciona la simulación?'].map((q, i) => (
+            {[
+              '¿Qué es GPRR Invap XR?', 
+              '¿Qué hardware se utiliza?', 
+              '¿Cómo funciona la simulación?',
+              '¿Cómo ayuda la IA en el GPRR?',
+              '¿Qué es el Gemelo Digital?',
+              '¿Cómo puedo colaborar?'
+            ].map((q, i) => (
               <button
                 key={i}
                 onClick={() => sendMessage(q)}

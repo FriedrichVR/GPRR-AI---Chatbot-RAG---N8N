@@ -3,6 +3,7 @@ import { useState } from 'react';
 import WorkoutsHub from './components/WorkoutsHub';
 import ChatSection from './components/ChatSection';
 import XRSection from './components/XRSection';
+import GPRRInfoSection from './components/GPRRInfoSection';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'xr' | 'gprr' | 'ai'>('ai');
@@ -17,11 +18,7 @@ export default function App() {
           {activeTab === 'dashboard' && <WorkoutsHub />}
           {activeTab === 'ai' && <ChatSection />}
           {activeTab === 'xr' && <XRSection />}
-          {activeTab === 'gprr' && (
-            <div className="flex-1 flex items-center justify-center text-neutral-500">
-              GPRR Placeholder
-            </div>
-          )}
+          {activeTab === 'gprr' && <GPRRInfoSection />}
         </div>
 
         {/* Bottom Navigation */}
