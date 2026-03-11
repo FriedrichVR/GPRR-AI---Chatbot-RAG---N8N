@@ -232,21 +232,22 @@ export default function ChatSection() {
                 </div>
                 <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex flex-col gap-2 min-w-[140px]">
                   <div className="flex items-center gap-1.5 h-4">
-                    <motion.div 
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
-                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
-                    ></motion.div>
-                    <motion.div 
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.2, ease: "easeInOut" }}
-                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
-                    ></motion.div>
-                    <motion.div 
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.4, ease: "easeInOut" }}
-                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
-                    ></motion.div>
+                    {[0, 0.2, 0.4].map((delay, i) => (
+                      <motion.div 
+                        key={i}
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{ 
+                          repeat: Infinity, 
+                          duration: 1.2, 
+                          delay,
+                          ease: "easeInOut" 
+                        }}
+                        className="w-2 h-2 bg-emerald-500 rounded-full"
+                      ></motion.div>
+                    ))}
                   </div>
                   <motion.div 
                     key={typingState}
@@ -269,7 +270,7 @@ export default function ChatSection() {
 
       {/* Input Area */}
       <div className="p-4 bg-[#030303] border-t border-white/5 z-20 flex flex-col gap-3">
-        <div className="relative flex items-center bg-[#111111] border border-white/10 rounded-full p-1.5 focus-within:border-emerald-500/50 transition-colors">
+        <div className="relative flex items-center bg-[#111111] border border-white/10 rounded-full p-1.5 focus-within:border-[#10B981] transition-colors">
           <input 
             type="text" 
             value={inputValue}

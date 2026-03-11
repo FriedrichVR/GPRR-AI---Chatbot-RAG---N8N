@@ -26,11 +26,17 @@ export default function WorkoutCards() {
       <div className="grid grid-cols-2 gap-4">
         {/* AI Simulation */}
         <div className="col-span-1 h-56 rounded-[2rem] bg-gradient-to-br from-neutral-900 to-[#080808] border border-white/10 p-5 flex flex-col justify-between group cursor-pointer hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden">
+          <img 
+            src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop" 
+            alt="AI RAG Assistant" 
+            className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity"
+            referrerPolicy="no-referrer"
+          />
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[40px] rounded-full group-hover:bg-emerald-500/20 transition-all"></div>
-          <div className="w-10 h-10 rounded-2xl bg-emerald-950/50 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+          <div className="relative z-10 w-10 h-10 rounded-2xl bg-emerald-950/50 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-300">
             <Cpu className="w-5 h-5" />
           </div>
-          <div>
+          <div className="relative z-10">
             <h2 className="text-lg font-medium text-white tracking-tight leading-6">Asistente<br/>IA RAG</h2>
             <p className="text-[10px] font-medium text-neutral-500 mt-2 group-hover:text-emerald-400 transition-colors flex items-center gap-0.5">
               Procesamiento Local <Sparkles className="w-2.5 h-2.5" />
