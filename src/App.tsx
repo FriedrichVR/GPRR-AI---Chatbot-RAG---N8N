@@ -2,6 +2,7 @@ import { LayoutGrid, Dumbbell, Utensils, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import WorkoutsHub from './components/WorkoutsHub';
 import ChatSection from './components/ChatSection';
+import XRSection from './components/XRSection';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'xr' | 'gprr' | 'ai'>('ai');
@@ -15,9 +16,10 @@ export default function App() {
         <div className="flex-1 relative z-10 overflow-hidden flex flex-col">
           {activeTab === 'dashboard' && <WorkoutsHub />}
           {activeTab === 'ai' && <ChatSection />}
-          {(activeTab === 'xr' || activeTab === 'gprr') && (
+          {activeTab === 'xr' && <XRSection />}
+          {activeTab === 'gprr' && (
             <div className="flex-1 flex items-center justify-center text-neutral-500">
-              {activeTab.toUpperCase()} Placeholder
+              GPRR Placeholder
             </div>
           )}
         </div>
