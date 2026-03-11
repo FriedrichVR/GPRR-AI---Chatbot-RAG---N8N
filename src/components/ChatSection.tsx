@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ChevronLeft, Settings, Sparkles } from 'lucide-react';
+import { Send, Bot, ChevronLeft, Settings, Sparkles, ThumbsUp, ThumbsDown } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -7,6 +7,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  feedback?: 'up' | 'down';
   media?: {
     image: string;
     title: string;
@@ -15,42 +16,26 @@ interface Message {
 }
 
 const QUESTION_POOL = [
-  '¿Qué es GPRR Invap XR?',
-  '¿Qué hardware se utiliza?',
-  '¿Cómo funciona la simulación?',
-  '¿Cómo ayuda la IA en el GPRR?',
-  '¿Qué es el Gemelo Digital?',
-  '¿Cómo puedo colaborar?',
-  '¿Qué tecnologías usa INVAP?',
-  '¿Cuál es el impacto del GPRR?',
-  '¿Cómo se entrena a los operadores?',
-  '¿Qué ventajas tiene la Realidad Extendida?',
-  '¿Cuáles son los casos de uso principales?',
-  '¿Cómo se garantiza la seguridad nuclear?',
-  '¿Qué nivel de inmersión ofrece el visor VR?',
-  '¿Cómo se simulan las físicas del reactor?',
-  '¿Qué componentes del GPRR están modelados en 3D?',
-  '¿Se puede interactuar con el panel de control?',
-  '¿Qué motores gráficos se usan para la experiencia XR?',
-  '¿Cómo se maneja la latencia en la simulación?',
-  '¿Existen escenarios de emergencia simulados?',
-  '¿Cómo se evalúa el desempeño del usuario?',
-  '¿Qué medidas de seguridad virtual están implementadas?',
-  '¿Se requiere experiencia previa para usar el simulador?',
-  '¿Cuáles son los requisitos de hardware para PC?',
-  '¿La experiencia XR soporta modo multijugador?',
-  '¿Qué framework de XR se utiliza para el desarrollo?',
-  '¿Cómo se optimizan los modelos 3D para mantener altos FPS?',
-  '¿Cómo se maneja el tracking de manos en la simulación?',
-  '¿Qué modelo de lenguaje (LLM) procesa las consultas del GPRR?',
-  '¿Cómo se actualiza la base de conocimiento RAG del asistente?',
-  '¿El asistente de IA tiene acceso en tiempo real a la telemetría?',
-  '¿Cómo se mitigan las alucinaciones de la IA en datos críticos?',
-  '¿Qué rol cumple n8n en la arquitectura del proyecto?',
-  '¿Cómo se estructuran los nodos del webhook en n8n?',
-  '¿Qué bases de datos vectoriales se conectan mediante n8n?',
-  '¿Cómo maneja n8n los errores de conexión con la IA?',
-  '¿Cómo se integra el frontend de React con los flujos de n8n?'
+  '¿Qué es el ecosistema GPRR?',
+  '¿Qué desafíos resuelve la plataforma GPRR?',
+  '¿Qué áreas de interacción tiene la aplicación?',
+  '¿Qué tecnologías de Unreal Engine 5.5 se utilizan?',
+  '¿Qué es el middleware "The Bridge"?',
+  '¿Cómo se integra la Inteligencia Artificial en el GPRR?',
+  '¿Cuáles son los casos de uso en el sector nuclear?',
+  '¿Cómo se aplica el protocolo ALARA en XR?',
+  '¿Qué hardware HMD se recomienda para la simulación?',
+  '¿Quiénes desarrollaron la plataforma GPRR?',
+  '¿Qué es el Efecto Cherenkov?',
+  '¿Qué es el Foveated Rendering?',
+  '¿Qué es el dopado de silicio por transmutación (NTD-Silicon)?',
+  '¿Qué relación tiene el GPRR con el Reactor OPAL y el RA-10?',
+  '¿Qué rol cumple Federico Sastre Heer en el proyecto?',
+  '¿Qué rol cumple Alén Eneas Geor en el proyecto?',
+  '¿Qué rol cumple Juan Emanuel Venturelli en el proyecto?',
+  '¿Qué es el Passthrough en Realidad Mixta?',
+  '¿Cómo funciona la dosimetría virtual en el simulador?',
+  '¿Qué latencia máxima tiene la arquitectura técnica?'
 ];
 
 export default function ChatSection() {
@@ -73,6 +58,7 @@ export default function ChatSection() {
   const [sessionId] = useState(() => Math.random().toString(36).substring(7));
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  const [questionFeedback, setQuestionFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
   const refreshQuestions = () => {
     const shuffled = [...QUESTION_POOL].sort(() => 0.5 - Math.random());
@@ -203,6 +189,26 @@ export default function ChatSection() {
     }
   };
 
+  const handleFeedback = (index: number, type: 'up' | 'down') => {
+    setMessages(prev => prev.map((msg, i) => 
+      i === index ? { ...msg, feedback: msg.feedback === type ? undefined : type } : msg
+    ));
+  };
+
+  const handleQuestionFeedback = (e: React.MouseEvent, question: string, type: 'up' | 'down') => {
+    e.stopPropagation();
+    setQuestionFeedback(prev => {
+      const current = prev[question];
+      const updated = { ...prev };
+      if (current === type) {
+        delete updated[question];
+      } else {
+        updated[question] = type;
+      }
+      return updated;
+    });
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
@@ -305,10 +311,28 @@ export default function ChatSection() {
                 </div>
               </div>
               
-              {/* Timestamp */}
-              <span className={`text-[10px] text-neutral-500 mt-1.5 ${isAI ? 'ml-12' : 'mr-2'}`}>
-                {msg.timestamp}
-              </span>
+              {/* Timestamp and Feedback */}
+              <div className={`flex items-center gap-3 mt-1.5 ${isAI ? 'ml-12' : 'mr-2'}`}>
+                <span className="text-[10px] text-neutral-500">
+                  {msg.timestamp}
+                </span>
+                {isAI && (
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={() => handleFeedback(idx, 'up')}
+                      className={`p-1 rounded-md transition-colors ${msg.feedback === 'up' ? 'text-emerald-500 bg-emerald-500/10' : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'}`}
+                    >
+                      <ThumbsUp className="w-3 h-3" />
+                    </button>
+                    <button 
+                      onClick={() => handleFeedback(idx, 'down')}
+                      className={`p-1 rounded-md transition-colors ${msg.feedback === 'down' ? 'text-red-500 bg-red-500/10' : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'}`}
+                    >
+                      <ThumbsDown className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </motion.div>
           );
         })}
@@ -373,13 +397,33 @@ export default function ChatSection() {
         {/* Quick Questions */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
           {suggestedQuestions.map((q, i) => (
-            <button
+            <div
               key={i}
-              onClick={() => sendMessage(q)}
-              className="px-4 py-2 bg-[#111111] border border-white/10 rounded-full text-sm text-neutral-300 whitespace-nowrap hover:bg-[#1A201E] hover:border-emerald-500/50 transition-colors shrink-0"
+              className="flex items-center bg-[#111111] border border-white/10 rounded-full shrink-0 transition-colors focus-within:border-emerald-500/50 hover:border-emerald-500/50"
             >
-              {q}
-            </button>
+              <button
+                onClick={() => sendMessage(q)}
+                className="px-4 py-2 text-sm text-neutral-300 whitespace-nowrap hover:text-white transition-colors"
+              >
+                {q}
+              </button>
+              <div className="flex items-center pr-2 gap-0.5">
+                <button
+                  onClick={(e) => handleQuestionFeedback(e, q, 'up')}
+                  className={`p-1.5 rounded-full transition-colors ${questionFeedback[q] === 'up' ? 'text-emerald-500 bg-emerald-500/10' : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'}`}
+                  title="Buena sugerencia"
+                >
+                  <ThumbsUp className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={(e) => handleQuestionFeedback(e, q, 'down')}
+                  className={`p-1.5 rounded-full transition-colors ${questionFeedback[q] === 'down' ? 'text-red-500 bg-red-500/10' : 'text-neutral-500 hover:text-neutral-300 hover:bg-white/5'}`}
+                  title="Mala sugerencia"
+                >
+                  <ThumbsDown className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       </div>
