@@ -87,6 +87,57 @@ export default function XRSection() {
           </div>
         ))}
 
+        {/* VR Gallery Section */}
+        <div className="pt-2 px-2">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-white text-base font-medium flex items-center gap-2">
+              <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
+              VR Experience Visuals
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4">
+            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
+              <img 
+                src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=800&auto=format&fit=crop" 
+                alt="Immersive Simulation" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
+                <h4 className="text-white font-bold text-sm tracking-tight">Immersive Simulation</h4>
+                <p className="text-neutral-400 text-[10px] mt-1">High-fidelity nuclear environment</p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
+              <img 
+                src="https://images.unsplash.com/photo-1592477976562-f55d3623f60c?q=80&w=800&auto=format&fit=crop" 
+                alt="Interactive Controls" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
+                <h4 className="text-white font-bold text-sm tracking-tight">Interactive Controls</h4>
+                <p className="text-neutral-400 text-[10px] mt-1">Precision manipulation mechanics</p>
+              </div>
+            </div>
+
+            <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
+              <img 
+                src="https://images.unsplash.com/photo-1551288049-bbbda546697a?q=80&w=800&auto=format&fit=crop" 
+                alt="Data Visualization" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-5 flex flex-col justify-end">
+                <h4 className="text-white font-bold text-sm tracking-tight">Data Visualization</h4>
+                <p className="text-neutral-400 text-[10px] mt-1">Real-time physics monitoring</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Vision Footer */}
         <div className="pt-4 pb-8 px-2">
           <div className="p-5 rounded-3xl bg-emerald-950/10 border border-emerald-500/10">

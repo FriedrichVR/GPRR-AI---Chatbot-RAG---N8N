@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, ChevronLeft, Settings } from 'lucide-react';
+import { Send, Bot, ChevronLeft, Settings, Sparkles } from 'lucide-react';
 import Markdown from 'react-markdown';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -28,11 +29,36 @@ export default function ChatSection() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [typingState, setTypingState] = useState('Pensando...');
   const [sessionId] = useState(() => Math.random().toString(36).substring(7));
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const typingStates = [
+    'Analizando datos...',
+    'Consultando base RAG...',
+    'Generando respuesta...',
+    'Optimizando simulación...',
+    'Verificando física GPRR...'
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTyping) {
+      let i = 0;
+      interval = setInterval(() => {
+        setTypingState(typingStates[i % typingStates.length]);
+        i++;
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isTyping]);
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current) {
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
   };
 
   useEffect(() => {
@@ -192,20 +218,52 @@ export default function ChatSection() {
         })}
         
         {/* Typing Indicator */}
-        {isTyping && (
-          <div className="flex flex-col items-start mb-8">
-            <div className="flex items-end gap-3 max-w-[85%]">
-              <div className="w-8 h-8 rounded-full bg-emerald-900/40 flex items-center justify-center shrink-0 mb-1">
-                <Bot className="w-5 h-5 text-emerald-500" />
+        <AnimatePresence>
+          {isTyping && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-start mb-8"
+            >
+              <div className="flex items-end gap-3 max-w-[85%]">
+                <div className="w-8 h-8 rounded-full bg-emerald-900/40 flex items-center justify-center shrink-0 mb-1">
+                  <Bot className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex flex-col gap-2 min-w-[140px]">
+                  <div className="flex items-center gap-1.5 h-4">
+                    <motion.div 
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ repeat: Infinity, duration: 1 }}
+                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
+                    ></motion.div>
+                    <motion.div 
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
+                    ></motion.div>
+                    <motion.div 
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                      className="w-1.5 h-1.5 bg-emerald-500 rounded-full"
+                    ></motion.div>
+                  </div>
+                  <motion.div 
+                    key={typingState}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-1.5"
+                  >
+                    <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" />
+                    <span className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider">
+                      {typingState}
+                    </span>
+                  </motion.div>
+                </div>
               </div>
-              <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex items-center gap-1.5 h-[52px]">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full typing-dot"></div>
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full typing-dot"></div>
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full typing-dot"></div>
-              </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>
 

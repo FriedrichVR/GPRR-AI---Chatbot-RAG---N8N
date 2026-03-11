@@ -64,7 +64,7 @@ export default function WorkoutCards() {
           {/* Photo 1 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-7NNwIKq-69Y?q=80&w=800&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop" 
               alt="Reactor GPRR" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
@@ -78,7 +78,7 @@ export default function WorkoutCards() {
           {/* Photo 2 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-6801cHOH-vo?q=80&w=800&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800&auto=format&fit=crop" 
               alt="Control Room" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
@@ -92,7 +92,7 @@ export default function WorkoutCards() {
           {/* Photo 3 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-SmJirzyXL2s?q=80&w=800&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=800&auto=format&fit=crop" 
               alt="VR Tech" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
