@@ -14,6 +14,21 @@ interface Message {
   };
 }
 
+const QUESTION_POOL = [
+  '¿Qué es GPRR Invap XR?',
+  '¿Qué hardware se utiliza?',
+  '¿Cómo funciona la simulación?',
+  '¿Cómo ayuda la IA en el GPRR?',
+  '¿Qué es el Gemelo Digital?',
+  '¿Cómo puedo colaborar?',
+  '¿Qué tecnologías usa INVAP?',
+  '¿Cuál es el impacto del GPRR?',
+  '¿Cómo se entrena a los operadores?',
+  '¿Qué ventajas tiene la Realidad Extendida?',
+  '¿Cuáles son los casos de uso principales?',
+  '¿Cómo se garantiza la seguridad nuclear?'
+];
+
 export default function ChatSection() {
   const getCurrentTime = () => {
     const now = new Date();
@@ -29,11 +44,22 @@ export default function ChatSection() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [typingState, setTypingState] = useState('Pensando...');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingState, setLoadingState] = useState('Analizando datos...');
   const [sessionId] = useState(() => Math.random().toString(36).substring(7));
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
 
-  const typingStates = [
+  const refreshQuestions = () => {
+    const shuffled = [...QUESTION_POOL].sort(() => 0.5 - Math.random());
+    setSuggestedQuestions(shuffled.slice(0, 4));
+  };
+
+  useEffect(() => {
+    refreshQuestions();
+  }, []);
+
+  const loadingStates = [
     'Analizando datos...',
     'Consultando base RAG...',
     'Generando respuesta...',
@@ -43,15 +69,15 @@ export default function ChatSection() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isTyping) {
+    if (isLoading) {
       let i = 0;
       interval = setInterval(() => {
-        setTypingState(typingStates[i % typingStates.length]);
+        setLoadingState(loadingStates[i % loadingStates.length]);
         i++;
       }, 2000);
     }
     return () => clearInterval(interval);
-  }, [isTyping]);
+  }, [isLoading]);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -63,7 +89,7 @@ export default function ChatSection() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, isLoading]);
 
   const sendMessage = async (textToSend?: string | React.MouseEvent) => {
     const text = typeof textToSend === 'string' ? textToSend : inputValue;
@@ -71,10 +97,12 @@ export default function ChatSection() {
 
     const userText = text.trim();
     setInputValue('');
+    refreshQuestions();
     
     // 1. Add user message to local UI
     setMessages(prev => [...prev, { role: 'user', content: userText, timestamp: getCurrentTime() }]);
-    setIsTyping(true);
+    setIsLoading(true);
+    setIsTyping(false);
 
     try {
       // 2. Call local proxy API (bypasses CORS and adblockers)
@@ -129,11 +157,18 @@ export default function ChatSection() {
         aiResponse = "I received your message, but couldn't parse the response format.";
       }
       
+      setIsLoading(false);
+      setIsTyping(true);
+      
+      // Simulate typing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, timestamp: getCurrentTime() }]);
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the server.', timestamp: getCurrentTime() }]);
     } finally {
+      setIsLoading(false);
       setIsTyping(false);
     }
   };
@@ -147,7 +182,7 @@ export default function ChatSection() {
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
-      <div className="h-16 px-4 flex items-center justify-between z-20 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5">
+      <div className="h-16 px-4 flex items-center justify-between z-20 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5 relative">
         <div className="flex items-center gap-3">
           <button className="text-white hover:text-neutral-300 transition-colors">
             <ChevronLeft className="w-6 h-6" />
@@ -155,14 +190,45 @@ export default function ChatSection() {
           <div className="flex flex-col">
             <h1 className="text-sm font-bold tracking-wide text-white">GPRR AI</h1>
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span className="text-[9px] font-medium tracking-widest text-neutral-400 uppercase">En línea</span>
+              {isLoading ? (
+                <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" />
+              ) : (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              )}
+              <span className="text-[9px] font-medium tracking-widest text-neutral-400 uppercase">
+                {isLoading ? loadingState : 'En línea'}
+              </span>
             </div>
           </div>
         </div>
         <button className="text-white hover:text-neutral-300 transition-colors p-2">
           <Settings className="w-5 h-5" />
         </button>
+        
+        {/* Loading Progress Bar */}
+        <AnimatePresence>
+          {isLoading && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute bottom-0 left-0 right-0 h-[2px] bg-emerald-900/30 overflow-hidden"
+            >
+              <motion.div 
+                className="h-full bg-emerald-500"
+                animate={{
+                  x: ['-100%', '200%']
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.5,
+                  ease: "linear"
+                }}
+                style={{ width: '50%' }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Scroll Content - Messages Area */}
@@ -230,36 +296,23 @@ export default function ChatSection() {
                 <div className="w-8 h-8 rounded-full bg-emerald-900/40 flex items-center justify-center shrink-0 mb-1">
                   <Bot className="w-5 h-5 text-emerald-500" />
                 </div>
-                <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex flex-col gap-2 min-w-[140px]">
-                  <div className="flex items-center gap-1.5 h-4">
-                    {[0, 0.2, 0.4].map((delay, i) => (
-                      <motion.div 
-                        key={i}
-                        animate={{ 
-                          scale: [1, 1.2, 1],
-                          opacity: [0.5, 1, 0.5]
-                        }}
-                        transition={{ 
-                          repeat: Infinity, 
-                          duration: 1.2, 
-                          delay,
-                          ease: "easeInOut" 
-                        }}
-                        className="w-2 h-2 bg-emerald-500 rounded-full"
-                      ></motion.div>
-                    ))}
-                  </div>
-                  <motion.div 
-                    key={typingState}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider">
-                      {typingState}
-                    </span>
-                  </motion.div>
+                <div className="bg-[#1A201E] border border-white/5 rounded-2xl rounded-bl-sm p-4 flex items-center gap-1.5 h-[52px]">
+                  {[0, 0.2, 0.4].map((delay, i) => (
+                    <motion.div 
+                      key={i}
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.5, 1, 0.5]
+                      }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        duration: 1.2, 
+                        delay,
+                        ease: "easeInOut" 
+                      }}
+                      className="w-2 h-2 bg-emerald-500 rounded-full"
+                    ></motion.div>
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -281,33 +334,24 @@ export default function ChatSection() {
           />
           <button 
             onClick={sendMessage}
-            disabled={!inputValue.trim() || isTyping}
+            disabled={!inputValue.trim() || isTyping || isLoading}
             className="w-10 h-10 rounded-full bg-[#10B981] text-black flex items-center justify-center hover:bg-emerald-400 disabled:opacity-50 transition-colors shrink-0"
           >
             <Send className="w-5 h-5 ml-0.5" />
           </button>
         </div>
         {/* Quick Questions */}
-        {messages.length <= 1 && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
-            {[
-              '¿Qué es GPRR Invap XR?', 
-              '¿Qué hardware se utiliza?', 
-              '¿Cómo funciona la simulación?',
-              '¿Cómo ayuda la IA en el GPRR?',
-              '¿Qué es el Gemelo Digital?',
-              '¿Cómo puedo colaborar?'
-            ].map((q, i) => (
-              <button
-                key={i}
-                onClick={() => sendMessage(q)}
-                className="px-4 py-2 bg-[#111111] border border-white/10 rounded-full text-sm text-neutral-300 whitespace-nowrap hover:bg-[#1A201E] hover:border-emerald-500/50 transition-colors shrink-0"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
+          {suggestedQuestions.map((q, i) => (
+            <button
+              key={i}
+              onClick={() => sendMessage(q)}
+              className="px-4 py-2 bg-[#111111] border border-white/10 rounded-full text-sm text-neutral-300 whitespace-nowrap hover:bg-[#1A201E] hover:border-emerald-500/50 transition-colors shrink-0"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
