@@ -4,6 +4,45 @@ import { Sparkles, Shield, Zap, Globe, Cpu } from 'lucide-react';
 
 export default function GPRRInfoSection() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      // Usamos no-cors por si el webhook de n8n no tiene configurado CORS
+      // y enviamos como x-www-form-urlencoded que es un Content-Type permitido en no-cors
+      const response = await fetch('https://n8n.srv1202174.hstgr.cloud/form/d0b9936a-435d-4ab5-9713-04825d6b7807', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(formData).toString(),
+      });
+
+      if (response.ok || response.type === 'opaque') {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+        setErrorMessage(`Error del servidor: ${response.status} ${response.statusText}`);
+      }
+    } catch (error: any) {
+      setSubmitStatus('error');
+      setErrorMessage(error.message || 'Error de conexión (posible problema de CORS)');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const pillars = [
     { icon: Shield, title: "Transparencia Técnica", desc: "Convierte datos complejos de ingeniería en procesos intuitivos para cualquier stakeholder." },
     { icon: Zap, title: "Innovación Radical", desc: "Posiciona a los colaboradores en la vanguardia de la Industria 4.0 y la simulación inmersiva." },
@@ -95,14 +134,71 @@ export default function GPRRInfoSection() {
         La complejidad ya no es una barrera para la comunicación."
       </blockquote>
 
-      <div className="pb-8 text-center">
-        <a 
-          href="mailto:FSastreHeer@invap.com.ar"
-          className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/20"
-        >
-          Contact Us
-        </a>
-        <p className="mt-3 text-xs text-neutral-500">FSastreHeer@invap.com.ar</p>
+      {/* Contact Form */}
+      <div className="pb-8">
+        <div className="p-6 rounded-3xl bg-[#0A0D0C] border border-white/5">
+          <h2 className="text-lg font-bold text-white mb-4">Enviar Consulta</h2>
+          
+          {submitStatus === 'success' ? (
+            <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-emerald-400 text-sm text-center">
+              ¡Gracias! Tu consulta ha sido enviada correctamente.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-xs font-medium text-neutral-400 mb-1">Nombre</label>
+                <input
+                  type="text"
+                  id="name"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full bg-[#111111] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                  placeholder="Tu nombre"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-xs font-medium text-neutral-400 mb-1">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-[#111111] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                  placeholder="tu@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-xs font-medium text-neutral-400 mb-1">Mensaje</label>
+                <textarea
+                  id="message"
+                  required
+                  rows={3}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full bg-[#111111] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500/50 transition-colors resize-none"
+                  placeholder="¿En qué podemos ayudarte?"
+                />
+              </div>
+              
+              {submitStatus === 'error' && (
+                <div className="text-red-400 text-xs">
+                  <p>Hubo un error al enviar el mensaje. Por favor, intenta nuevamente.</p>
+                  {errorMessage && <p className="mt-1 opacity-80">Detalle: {errorMessage}</p>}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Enviando...' : 'Enviar Consulta'}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
       </div>
     </div>
