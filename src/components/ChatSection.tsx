@@ -57,16 +57,82 @@ export default function ChatSection() {
   const [loadingState, setLoadingState] = useState('Analizando datos...');
   const [sessionId] = useState(() => Math.random().toString(36).substring(7));
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const [questionFeedback, setQuestionFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
-  const refreshQuestions = () => {
-    const shuffled = [...QUESTION_POOL].sort(() => 0.5 - Math.random());
-    setSuggestedQuestions(shuffled.slice(0, 4));
+  const refreshQuestions = (currentMessages: Message[] = messages) => {
+    // Get all user questions to avoid suggesting them again
+    const userQuestions = new Set(currentMessages.filter(m => m.role === 'user').map(m => m.content.trim()));
+    
+    const availableQuestions = QUESTION_POOL.filter(q => !userQuestions.has(q));
+
+    if (currentMessages.length <= 1) {
+      const shuffled = [...availableQuestions].sort(() => 0.5 - Math.random());
+      setSuggestedQuestions(shuffled.slice(0, 4));
+      return;
+    }
+
+    const recentText = currentMessages.slice(-2).map(m => m.content.toLowerCase()).join(' ');
+    
+    // Define some topic clusters for better context matching
+    const topics = [
+      { keywords: ['ia', 'inteligencia', 'artificial', 'rag', 'llm', 'asistente', 'n8n', 'webhook'], weight: 2 },
+      { keywords: ['xr', 'realidad', 'virtual', 'mixta', 'aumentada', 'visor', 'quest', 'hmd', 'passthrough', 'foveated'], weight: 2 },
+      { keywords: ['nuclear', 'reactor', 'gprr', 'opal', 'ra-10', 'alara', 'cherenkov', 'radiación', 'dosimetría', 'silicio', 'transmutación'], weight: 2 },
+      { keywords: ['unreal', 'engine', 'lumen', 'nanite', 'bridge', 'latencia', 'fps', '3d', 'gemelo', 'digital'], weight: 2 },
+      { keywords: ['federico', 'alén', 'juan', 'equipo', 'desarrolladores', 'invap'], weight: 2 }
+    ];
+
+    // Find active topics in recent text
+    const activeTopics = topics.filter(topic => 
+      topic.keywords.some(kw => recentText.includes(kw))
+    );
+
+    const scoredQuestions = availableQuestions.map(q => {
+      const qLower = q.toLowerCase();
+      let score = 0;
+      
+      // Score based on active topics
+      activeTopics.forEach(topic => {
+        if (topic.keywords.some(kw => qLower.includes(kw))) {
+          score += topic.weight;
+        }
+      });
+
+      // Score based on direct word overlap with recent text
+      const qWords = qLower.match(/\b\w{4,}\b/g) || [];
+      qWords.forEach(w => {
+        if (recentText.includes(w)) score += 0.5;
+      });
+
+      // Randomness to keep it fresh
+      score += Math.random();
+      
+      return { q, score };
+    });
+
+    scoredQuestions.sort((a, b) => b.score - a.score);
+    setSuggestedQuestions(scoredQuestions.slice(0, 4).map(item => item.q));
   };
 
   useEffect(() => {
     refreshQuestions();
+  }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        container.scrollLeft += e.deltaY;
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
   }, []);
 
   const loadingStates = [
@@ -107,10 +173,13 @@ export default function ChatSection() {
 
     const userText = text.trim();
     setInputValue('');
-    refreshQuestions();
     
     // 1. Add user message to local UI
-    setMessages(prev => [...prev, { role: 'user', content: userText, timestamp: getCurrentTime() }]);
+    setMessages(prev => {
+      const newMessages: Message[] = [...prev, { role: 'user', content: userText, timestamp: getCurrentTime() }];
+      refreshQuestions(newMessages);
+      return newMessages;
+    });
     setIsLoading(true);
     setIsTyping(false);
 
@@ -173,7 +242,11 @@ export default function ChatSection() {
       // Simulate typing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse, timestamp: getCurrentTime() }]);
+      setMessages(prev => {
+        const finalMessages: Message[] = [...prev, { role: 'assistant', content: aiResponse, timestamp: getCurrentTime() }];
+        refreshQuestions(finalMessages);
+        return finalMessages;
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the server.', timestamp: getCurrentTime() }]);
@@ -395,7 +468,10 @@ export default function ChatSection() {
           </button>
         </div>
         {/* Quick Questions */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2">
+        <div 
+          ref={scrollContainerRef}
+          className="flex gap-2 overflow-x-auto no-scrollbar pt-1 pb-2"
+        >
           {suggestedQuestions.map((q, i) => (
             <div
               key={i}
