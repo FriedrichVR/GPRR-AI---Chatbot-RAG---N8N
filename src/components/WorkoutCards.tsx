@@ -64,7 +64,7 @@ export default function WorkoutCards() {
           {/* Photo 1 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1773194473562-5f9480fb8e98?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
               alt="Reactor GPRR" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
@@ -78,7 +78,7 @@ export default function WorkoutCards() {
           {/* Photo 2 */}
           <div className="group relative rounded-3xl overflow-hidden border border-white/5 aspect-video">
             <img 
-              src="https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1773194396493-6c9502eea26f?q=80&w=1340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
               alt="Control Room" 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               referrerPolicy="no-referrer"
