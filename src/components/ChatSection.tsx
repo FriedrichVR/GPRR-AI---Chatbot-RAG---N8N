@@ -26,7 +26,19 @@ const QUESTION_POOL = [
   '¿Cómo se entrena a los operadores?',
   '¿Qué ventajas tiene la Realidad Extendida?',
   '¿Cuáles son los casos de uso principales?',
-  '¿Cómo se garantiza la seguridad nuclear?'
+  '¿Cómo se garantiza la seguridad nuclear?',
+  '¿Qué nivel de inmersión ofrece el visor VR?',
+  '¿Cómo se simulan las físicas del reactor?',
+  '¿Qué componentes del GPRR están modelados en 3D?',
+  '¿Se puede interactuar con el panel de control?',
+  '¿Qué motores gráficos se usan para la experiencia XR?',
+  '¿Cómo se maneja la latencia en la simulación?',
+  '¿Existen escenarios de emergencia simulados?',
+  '¿Cómo se evalúa el desempeño del usuario?',
+  '¿Qué medidas de seguridad virtual están implementadas?',
+  '¿Se requiere experiencia previa para usar el simulador?',
+  '¿Cuáles son los requisitos de hardware para PC?',
+  '¿La experiencia XR soporta modo multijugador?'
 ];
 
 export default function ChatSection() {
@@ -236,7 +248,13 @@ export default function ChatSection() {
         {messages.map((msg, idx) => {
           const isAI = msg.role === 'assistant';
           return (
-            <div key={idx} className={`flex flex-col ${isAI ? 'items-start mb-8' : 'items-end mb-4'}`}>
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className={`flex flex-col ${isAI ? 'items-start mb-8' : 'items-end mb-4'}`}
+            >
               <div className={`flex items-end gap-3 max-w-[85%] ${isAI ? 'flex-row' : 'flex-row-reverse'}`}>
                 
                 {/* AI Avatar */}
@@ -279,7 +297,7 @@ export default function ChatSection() {
               <span className={`text-[10px] text-neutral-500 mt-1.5 ${isAI ? 'ml-12' : 'mr-2'}`}>
                 {msg.timestamp}
               </span>
-            </div>
+            </motion.div>
           );
         })}
         
