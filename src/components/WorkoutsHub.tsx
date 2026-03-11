@@ -4,10 +4,10 @@ export default function WorkoutsHub() {
   return (
     <div className="flex-1 flex flex-col h-full relative">
       {/* Header */}
-      <div className="px-7 pt-4 pb-2 flex justify-between items-end z-20 shrink-0">
-        <h1 className="text-3xl font-medium tracking-tight text-white">Workouts</h1>
-        <div className="w-10 h-10 rounded-full bg-neutral-900/80 border border-white/10 flex items-center justify-center hover:bg-neutral-800 transition-colors cursor-pointer">
-          <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" className="w-full h-full rounded-full opacity-90 hover:opacity-100 transition-opacity" />
+      <div className="h-16 px-6 flex items-center justify-between z-20 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5">
+        <h1 className="text-xl font-bold tracking-tight text-white">Workouts</h1>
+        <div className="w-9 h-9 rounded-full bg-neutral-900/80 border border-white/10 flex items-center justify-center hover:bg-neutral-800 transition-colors cursor-pointer overflow-hidden">
+          <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
         </div>
       </div>
 

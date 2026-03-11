@@ -4,9 +4,14 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #10b77f;
+  --color-background-dark: #030303;
 }
 
 @layer utilities {
+  .radial-glow {
+    background: radial-gradient(circle at 50% -20%, rgba(16, 183, 127, 0.15) 0%, rgba(3, 3, 3, 1) 70%);
+  }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

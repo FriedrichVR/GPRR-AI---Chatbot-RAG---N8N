@@ -28,6 +28,7 @@ export default function ChatSection() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId] = useState(() => Math.random().toString(36).substring(7));
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -50,11 +51,11 @@ export default function ChatSection() {
     setIsTyping(true);
 
     try {
-      // 2. Call n8n Webhook
-      const response = await fetch('https://n8n.srv1202174.hstgr.cloud/webhook/58fce02b-5157-4f02-a652-0ff5eaba59c2/chat', {
+      // 2. Call local proxy API (bypasses CORS and adblockers)
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chatInput: userText })
+        body: JSON.stringify({ chatInput: userText, sessionId })
       });
 
       if (!response.ok) {
@@ -120,19 +121,21 @@ export default function ChatSection() {
   return (
     <div className="flex-1 flex flex-col h-full relative bg-[#050A08]">
       {/* Header */}
-      <div className="h-20 px-6 pt-8 pb-4 flex items-center justify-between z-20 shrink-0 bg-[#030303] border-b border-white/5">
-        <button className="text-white hover:text-neutral-300 transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <div className="flex flex-col items-center">
-          <h1 className="text-base font-bold tracking-wide text-white">GPRR AI</h1>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span className="text-[10px] font-medium tracking-widest text-neutral-400">ONLINE</span>
+      <div className="h-16 px-4 flex items-center justify-between z-20 shrink-0 bg-[#030303]/80 backdrop-blur-md border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <button className="text-white hover:text-neutral-300 transition-colors">
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <div className="flex flex-col">
+            <h1 className="text-sm font-bold tracking-wide text-white">GPRR AI</h1>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span className="text-[9px] font-medium tracking-widest text-neutral-400 uppercase">En línea</span>
+            </div>
           </div>
         </div>
-        <button className="text-white hover:text-neutral-300 transition-colors">
-          <Settings className="w-6 h-6" />
+        <button className="text-white hover:text-neutral-300 transition-colors p-2">
+          <Settings className="w-5 h-5" />
         </button>
       </div>
 
